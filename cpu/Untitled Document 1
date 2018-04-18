@@ -1,0 +1,81 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <pthread.h>
+#include <immintrin.h>
+
+
+//FILL ME IN
+
+int main(int argc,char* argv)
+{
+long NUM_OPERATIONS = 1000000000;
+
+//Calculation of Single Precision
+   for(int i = 0;i <= NUM_OPERATIONS;i++)
+     {
+       char a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+     }
+
+   //Calculation of Half Precision
+   for(int i = 0;i <= NUM_OPERATIONS;i++)
+     {
+       short a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+    
+     }
+
+   //Calculation of SIngle Precision
+   for(int i = 0;i <= NUM_OPERATIONS;i++)
+     {
+       int a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+     
+     }
+
+    //Calculation of Double Precision
+   for(int i = 0;i <= NUM_OPERATIONS;i++)
+     {
+       double a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9)*a1;
+     
+     }

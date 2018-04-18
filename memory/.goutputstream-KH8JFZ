@@ -1,0 +1,219 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
+#include <math.h>
+#include <sys/time.h>
+#include <immintrin.h>
+#include <unistd.h>
+
+
+long GB_DATA = 1000000000;
+int BLOCK_SIZE = 2;
+int NUMBER_OF_ITERATIONS = 100000;
+int NUMBER_OF_THREADS =1;
+char option = 'S';
+
+
+//To perfrom Sequential Read Write Operation
+
+void* sequential_read_write(void* arg)
+{
+    char * dstn = (char*)malloc(100*BLOCK_SIZE);
+    char * src = (char*)malloc(10*sizeof(char));
+    for(int i;i<NUMBER_OF_ITERATIONS;i++)
+     {
+  	memcpy( dstn, src, BLOCK_SIZE);
+     }
+  pthread_exit(NULL);
+}
+
+//To perform Random Read Write Operation
+
+void* random_read_write(void* arg)
+{
+    char * random_operation = (char*)malloc(BLOCK_SIZE*sizeof(char));
+    char * src = (char*)malloc(BLOCK_SIZE);
+    for(int i;i<NUMBER_OF_ITERATIONS;i++)
+    {
+  	int random_value = rand()%BLOCK_SIZE;
+  	src = src + random_value;
+  	memcpy(random_operation,src,BLOCK_SIZE);  
+    }
+  pthread_exit(NULL);
+}
+
+
+void memory_consumed_sequential_readwrite(double total_time,double latency,double throughput)
+{
+
+   
+  if(option == 'S')
+  {
+    
+    if(BLOCK_SIZE == 1000)
+    {
+	printf("\n The time taken for Sequential Read Write 1KB Memory is , %lf GB/sec \n ",total_time);
+	printf("\n The latency of Sequential Read Write 1KB Memory is,  %lf micro second \n ",latency);
+	printf("\n The throughput of Sequential Read Write 1KB Memory is, %lf GB per second \n ",throughput);	
+    }
+
+    if(BLOCK_SIZE == 1000000)
+    {
+	printf("\n The time taken for Sequential Read Write 1MB Memory is  %lf GB/sec \n ",total_time);
+	printf("\n The latency of Sequential Read Write 1MB Memory is %lf micro second \n ",latency);
+	printf("\n The throughput of Sequential Read Write 1MB Memory is %lf GB per second \n ",throughput);	
+    }
+
+    if(BLOCK_SIZE == 10000000)
+    {
+	printf("\n The time taken for Sequential Read Write 10MB Memory is %lf GB/sec \n ",total_time);
+	printf("\n The latency of Sequential Read Write 10MB Memory is %lf micro second \n ",latency);
+	printf("\n The throughput of Sequential Read Write 10MB Memory is %lf GB per second \n ",throughput);	
+    }
+  }
+}
+
+
+void memory_consumed_random_readwrite(double total_time,double latency,double throughput)
+{
+    
+
+  if(option == 'R')
+  {
+    if(BLOCK_SIZE == 1000)
+    {
+	printf("\n The time taken for Random  Read Write 1KB Memory is %lf GB/sec \n ",total_time);
+	printf("\n The latency of Random  Read Write 1KB Memory is %lf micro second \n ",latency);
+	printf("\n The throughput of Random  Read Write 1KB Memory is %lf GB per second \n ",throughput);	
+    }
+
+    if(BLOCK_SIZE == 1000000)
+    {
+	printf("\n The time taken for Random  Read Write 1MB Memory is %lf GB/sec \n ",total_time);
+	printf("\n The latency of Random  Read Write 1MB Memory is %lf micro second \n ",latency);
+	printf("\n The throughput of Random  Read Write 1MB Memory is %lf GB per second \n ",throughput);	
+    }
+
+       if(BLOCK_SIZE == 10000000)
+    {
+	printf("\n The time taken for Random  Read Write 10MB Memory is %lf GB/sec \n ",total_time);
+	printf("\n The latency of Random  Read Write 10MB Memory is  %lf micro second \n ",latency);
+	printf("\n The throughput of Random Read Write 10MB Memory is %lf GB per second \n ",throughput);	
+    }
+  }
+}
+
+//Clock implementation using pthreads
+void clock_implementation()
+{
+	double total_time,start_time,end_time;
+	double latency,throughput;
+ 
+	start_time = clock();
+	pthread_t thread_id[NUMBER_OF_THREADS];
+	int thread[NUMBER_OF_THREADS];
+
+        void sequential_readwrite()
+        {
+		for(int i = 0;i < NUMBER_OF_THREADS; i++)
+     		{
+        	thread[i] = pthread_create(&(thread_id[i]),NULL,sequential_read_write,NULL);
+        	
+     		}
+        }
+
+	void random_readwrite()
+        {
+		for (int i=0;i<NUMBER_OF_THREADS;i++) 
+     		{
+         	thread[i] = pthread_create(&(thread_id[i]),NULL,random_read_write,NULL);
+         	
+     		}
+        }
+	
+  	if(option == 'S')
+  	{
+     		void sequential_readwrite();
+ 	}
+
+
+  	if(option == 'R')
+  	{
+     		void random_readwrite();
+  	}
+
+    	for (int i=0;i<NUMBER_OF_THREADS;i++)
+     	{
+     		pthread_join(thread_id[i], NULL);
+     	}
+
+	end_time = clock();
+	total_time = (end_time - start_time)/CLOCKS_PER_SEC;
+	printf("The Total time taken is \n", total_time);
+	throughput = (double) (BLOCK_SIZE*NUMBER_OF_ITERATIONS*NUMBER_OF_THREADS)/total_time;
+	throughput = throughput/1000000000; 
+	latency = (total_time/(BLOCK_SIZE*NUMBER_OF_ITERATIONS)*1000000);
+
+	memory_consumed_sequential_readwrite(total_time,latency,throughput);
+	memory_consumed_random_readwrite(total_time,latency,throughput);
+}
+
+int main(int argc, char* argv[]) 
+{
+
+   int arg;
+   while((arg=getopt(argc, argv, "12:i:t:b:")) != -1) 
+   {
+       switch(arg) 
+	{
+  	                       		//To select Sequential Read Write
+  	    case '1':         
+            {  
+               option = 'S';
+	       //if(option != 'S')
+	       //{
+                // printf("Error in handling memory \n");
+               //}
+               printf("The selection made is sequential read write \n");
+            }
+            break;
+            case '2':           	//To select Random Read Write
+            {  
+               option = 'R';
+               //if(option != 'R')
+	       //{
+               //  printf("Error in handling memory \n");
+               //}
+               printf("The selection made is random read write \n");
+            }
+            break;				
+	    case 'i':			// To select the number of iterations
+	    {
+	       
+  	       NUMBER_OF_ITERATIONS=atoi(optarg);
+            }
+  	    break;					
+	    case 't':			// To select the number of threads
+	    {
+               
+  	       NUMBER_OF_THREADS = atoi(optarg);
+            }
+  	    break;					
+	    case 'b':			// To select the block size
+	    {
+	       
+  	       BLOCK_SIZE = atoi(optarg);
+            }
+  	    break;
+
+  	    default:
+  	    break;
+   	}
+    }      
+   clock_implementation();
+   return 0;
+
+}
+
+

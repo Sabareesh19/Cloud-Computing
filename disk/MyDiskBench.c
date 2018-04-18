@@ -4,10 +4,15 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-int NUMBER_OF_THREADS = 1;
-long NUMBER_OF_ITERATIONS = 1000000000;
-int BLOCK_SIZE = 2;
-char SELECT = 'W';
+//strcmp(number_of_arguments[1],"WS") == 0 -- To select the workload for example WS- write sequential
+//atoi(number_of_arguments[2]) -- To the number of threads
+//atoi(number_of_arguments[3]) -- To estimate the block size
+//./MyDiskBench WS 1 1000
+
+
+char **number_of_arguments;
+long NUMBER_OF_ITERATIONS = 10000000;
+int BLOCK_SIZE = 8;
 
 //Reading the file with sequential write access pattern
 void* sequential_write_access(void* arg)
@@ -18,13 +23,14 @@ void* sequential_write_access(void* arg)
       {
         exit(1);
       }
-      char * fptr1 = (char*)malloc(1000*sizeof(int));
+      char * fptr1 = (char*)malloc(NUMBER_OF_ITERATIONS*sizeof(char));
       for(int i = 0; i< NUMBER_OF_ITERATIONS; i++)
       { 
-        fwrite(fptr1,BLOCK_SIZE,2,fileptr);
+        fwrite(fptr1,atoi(number_of_arguments[3]),1,fileptr);
       }
   fclose(fileptr);
-  //pthread_exit(NULL);
+  free(fptr1);
+  pthread_exit(NULL);
 }
 
 
@@ -36,13 +42,13 @@ void* sequential_read_access(void* arg){
       {
        exit(1);
       }
-      char * fptr1 = (char*)malloc(1000*sizeof(int));
+      char * fptr1 = (char*)malloc(NUMBER_OF_ITERATIONS*sizeof(char));
       for(int i = 0; i< NUMBER_OF_ITERATIONS; i++)
       { 
-        fread(fptr1,BLOCK_SIZE,2,fileptr);
+        fread(fptr1,atoi(number_of_arguments[3]),1,fileptr);
       }
   fclose(fileptr);
-  
+  free(fptr1);
 }
 
 
@@ -54,15 +60,15 @@ void* random_write_access(void* arg){
       {
        exit(1);
       }
-      char * fptr1 = (char*)malloc(1000*sizeof(int));
+      char * fptr1 = (char*)malloc(NUMBER_OF_ITERATIONS*sizeof(char));
       for(int i = 0; i< NUMBER_OF_ITERATIONS; i++)
       { 
-        int random_operation = rand()%BLOCK_SIZE;
+        int random_operation = rand()%1000;
         fseek(fileptr,random_operation,SEEK_SET);
-        fwrite(fptr1,BLOCK_SIZE,2,fileptr);
+        fwrite(fptr1,atoi(number_of_arguments[3]),1,fileptr);
       }
    fclose(fileptr);
-   
+   free(fptr1);
 }
 
 
@@ -74,37 +80,45 @@ void* random_read_access(void* arg){
      {
       exit(1);
      }
-     char * fptr1 = (char*)malloc(1000*sizeof(int));
+     char * fptr1 = (char*)malloc(NUMBER_OF_ITERATIONS*sizeof(char));
      for(int i = 0; i< NUMBER_OF_ITERATIONS; i++)
      { 
-       int random_operation = rand()%BLOCK_SIZE;
+       int random_operation = rand()%1000;
        fseek(fileptr,random_operation,SEEK_SET);
-       fread(fptr1,BLOCK_SIZE,2,fileptr);
+       fread(fptr1,atoi(number_of_arguments[3]),1,fileptr);
      }
     fclose(fileptr);
-    
+    free(fptr1);
 }
 
 void MyDiskbench_results_Sequential_write(double total_time, double throughput, double latency) {
    
-    if (SELECT=='W') 
+    if (strcmp(number_of_arguments[1],"WS") == 0)   //WS - Write Sequential
     {   
        
        
-	if (BLOCK_SIZE==1000000)
+	if (atoi(number_of_arguments[3])==1000)
         {
-            //printf("The latency of the disk for the Sequential write access pattern, 1MB block size, %d thread  %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Sequential write access pattern, 1MB block size, %d thread  %lf GB per second\n",NUMBER_OF_THREADS,throughput);
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
- 	if (BLOCK_SIZE==10000000) 
+ 	if (atoi(number_of_arguments[3])==10000) 
         {
-            //printf("The latency of the disk for the Sequential write access pattern, 10MB block size, %d thread  %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Sequential write access pattern, 10MB block size, %d thread -%lf GB per second \n",NUMBER_OF_THREADS,throughput);
+            
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
-	if (BLOCK_SIZE==100000000)
+	if (atoi(number_of_arguments[3])==100000)
         {
-            //printf("The latency of the disk for the Sequential write access pattern, 100MB block size, %d thread  %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Sequential write access pattern, 100MB block size, %d thread  %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+            
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         } 
     
     }
@@ -113,51 +127,72 @@ void MyDiskbench_results_Sequential_write(double total_time, double throughput, 
 void MyDiskbench_results_Sequential_read(double total_time, double throughput, double latency) 
 {
 
-    if (SELECT=='S') 
+    if (strcmp(number_of_arguments[1],"RS") == 0)     //RS - Read Sequential
     {
-        if (BLOCK_SIZE==1000000)
+        if (atoi(number_of_arguments[3])==1000)
         {
-            //printf("The latency of the disk for the Sequential read access pattern, 1MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Sequential read access pattern, 1MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+           
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
- 	if (BLOCK_SIZE==100000000)
+ 	if (atoi(number_of_arguments[3])==10000)
 	{
-            //printf("The latency of the disk for the Sequential read access pattern, 10MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Sequential read access pattern, 10MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+            
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
-	if (BLOCK_SIZE==1000000000) 
+	if (atoi(number_of_arguments[3])==100000) 
         {
-            //printf("The latency of the disk for the Sequential read access pattern, 100MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Sequential read access pattern, 100MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+           
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         } 
     } 
 }
 
 void MyDiskbench_results_Random_write(double total_time, double throughput, double latency) 
 {
-    if (SELECT=='R') 
+    if (strcmp(number_of_arguments[1],"WR") == 0)     //WR - Random write
     {
 
-        if (BLOCK_SIZE==1000)
+        if (atoi(number_of_arguments[3])==1)
         {
-            printf("The latency of the disk for the Random write access pattern, 1KB block size, %d thread  %lf milli second \n",NUMBER_OF_THREADS,latency);
-            //printf("The Throughput of the disk for the Sequential write access pattern, 1MB block size, %d thread  %lf GB per second\n",NUMBER_OF_THREADS,throughput);
+             printf("************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Latency(ms) \n");
+             printf("************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %f  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),latency);
+            
         }
 
-        if (BLOCK_SIZE==1000000)
+        if (atoi(number_of_arguments[3])==1000)       
         {
-            //printf("The latency of the disk for the Random write access pattern, 1MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Random write access pattern, 1MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+            
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
- 	if (BLOCK_SIZE==100000000)
+ 	if (atoi(number_of_arguments[3])==10000)
 	{
-           // printf("The latency of the disk for the Random write access pattern, 10MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Random write access pattern, 10MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+           
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
-	if (BLOCK_SIZE==1000000000) 
+	if (atoi(number_of_arguments[3])==100000) 
         {
-            //printf("The latency of the disk for the Random write access pattern, 100MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Random write access pattern, 100MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+            
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         } 
     } 
 }
@@ -165,29 +200,41 @@ void MyDiskbench_results_Random_write(double total_time, double throughput, doub
 
 void MyDiskbench_results_Random_read(double total_time, double throughput, double latency)
 { 
-   if (SELECT=='E') 
+   if (strcmp(number_of_arguments[1],"RR") == 0)      //RR - Random Read
     {
 
-        if (BLOCK_SIZE==1000)
+        if (atoi(number_of_arguments[3])==1)
         {
-            printf("The latency of the disk for the Random read access pattern, 1KB block size, %d thread  %lf milli second \n",NUMBER_OF_THREADS,latency);
-            //printf("The Throughput of the disk for the Sequential write access pattern, 1MB block size, %d thread  %lf GB per second\n",NUMBER_OF_THREADS,throughput);
+             printf("************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Latency(ms) \n");
+             printf("************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %f  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),latency);
+            
         }
 
-        if (BLOCK_SIZE==1000000)
+        if (atoi(number_of_arguments[3])==1000)
         {
-            //printf("The latency of the disk for the Random read access pattern, 1MB block size, %d thread  %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Random read access pattern, 1MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+           
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
- 	if (BLOCK_SIZE==10000000)
+ 	if (atoi(number_of_arguments[3])==10000)
 	{
-            //printf("The latency of the disk for the Random read access pattern, 10MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Random read access pattern, 10MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+           
+            printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         }
-	if (BLOCK_SIZE==100000000) 
+	if (atoi(number_of_arguments[3])==100000) 
         {
-            //printf("The latency of the disk for the Random read access pattern, 100MB block size, %d thread %lf milli second \n",NUMBER_OF_THREADS,latency);
-            printf("The Throughput of the disk for the Random read access pattern, 100MB block size, %d thread %lf GB per second \n",NUMBER_OF_THREADS,throughput);
+            
+             printf("*******************************************************************************\n");
+             printf("Workload      Concurrency       Block size      MyDiskBench Throughput(MB/sec) \n");
+             printf("*******************************************************************************\n");
+             printf("%s \t \t %d \t \t %d \t \t %lf  \t \t \n",number_of_arguments[1],atoi(number_of_arguments[2]),atoi(number_of_arguments[3]),throughput);
         } 
     }
 
@@ -197,20 +244,20 @@ void MyDiskbench_results_Random_read(double total_time, double throughput, doubl
 void MyDiskBench() 
 {
        FILE *fileptr;
-       char *fptr1 = (char *)malloc(BLOCK_SIZE*100000);
+       char *fptr1 = (char *)malloc(atoi(number_of_arguments[3]));
        fileptr = fopen( "file.txt" , "w" );
-       fwrite(fptr1,BLOCK_SIZE,2,fileptr);
+       fwrite(fptr1,atoi(number_of_arguments[3]),2,fileptr);
        
        double start,end,total_time;
        start = clock();	
       
-       pthread_t thread_id[NUMBER_OF_THREADS];
-       int thread[NUMBER_OF_THREADS]; 
+       pthread_t thread_id[atoi(number_of_arguments[2])];
+       int thread[atoi(number_of_arguments[2])]; 
 
        void pthread_sequential_write_access()
        {
          
-          for (int i=0;i<NUMBER_OF_THREADS;i++) 
+          for (int i=0;i<atoi(number_of_arguments[2]);i++) 
           {
             thread[i] = pthread_create(&(thread_id[i]),NULL,sequential_write_access,fileptr);
           }
@@ -219,7 +266,7 @@ void MyDiskBench()
        void pthread_sequential_read_access()
        {
          
-          for (int i=0;i<NUMBER_OF_THREADS;i++) 
+          for (int i=0;i<atoi(number_of_arguments[2]);i++) 
           {
             thread[i] = pthread_create(&(thread_id[i]),NULL,sequential_read_access,fileptr);
           }
@@ -228,7 +275,7 @@ void MyDiskBench()
        void pthread_random_write_access()
        {
          
-          for (int i=0;i<NUMBER_OF_THREADS;i++) 
+          for (int i=0;i<atoi(number_of_arguments[2]);i++) 
           {
             thread[i] = pthread_create(&(thread_id[i]),NULL,random_write_access,fileptr);
           }
@@ -237,121 +284,55 @@ void MyDiskBench()
        void pthread_random_read_access()
        {
          
-          for (int i=0;i<NUMBER_OF_THREADS;i++) 
+          for (int i=0;i<atoi(number_of_arguments[2]);i++) 
           {
             thread[i] = pthread_create(&(thread_id[i]),NULL,random_read_access,fileptr);
           }
        } 
 
      
-       if(SELECT == 'W') 
+       if(strcmp(number_of_arguments[1],"WS") == 0 ) 
        {
           pthread_sequential_write_access();
        } 
-       if (SELECT == 'S')
+       if (strcmp(number_of_arguments[1],"RS") == 0)
        {
          pthread_sequential_read_access();
        } 
-       if (SELECT == 'R')
+       if (strcmp(number_of_arguments[1],"WR") == 0)
        {
          pthread_random_write_access();
        }
-       if (SELECT == 'E')  
+       if (strcmp(number_of_arguments[1],"RR") == 0)  
        {
          pthread_random_read_access();
        }
 
-      for (int i=0;i<NUMBER_OF_THREADS;i++)
+      for (int i=0;i<atoi(number_of_arguments[2]);i++)
       {
       pthread_join(thread_id[i], NULL);
       }
       
       end = clock();
       total_time = (end - start)/CLOCKS_PER_SEC;
-      printf("The total time taken is %f \n ",total_time);
-      double throughput = (NUMBER_OF_ITERATIONS*BLOCK_SIZE*NUMBER_OF_THREADS)/total_time;
-      throughput = throughput/1000000000;
-      double latency = (total_time/(NUMBER_OF_ITERATIONS*BLOCK_SIZE))*1000000;
+      free(fptr1);
+      
+      double throughput = (NUMBER_OF_ITERATIONS*atoi(number_of_arguments[3])*atoi(number_of_arguments[2])*2)/(total_time);
+      throughput = throughput/10000000;
+      double latency = (total_time*1000)/(NUMBER_OF_ITERATIONS*atoi(number_of_arguments[3]));
      
 
       MyDiskbench_results_Sequential_read(total_time,throughput,latency);
       MyDiskbench_results_Sequential_write(total_time,throughput,latency);
       MyDiskbench_results_Random_read(total_time,throughput,latency);
       MyDiskbench_results_Random_write(total_time,throughput,latency);
-  
+    
 
 }
 
 int main(int argc, char *argv[]){
-    int arg;
-    while((arg=getopt(argc, argv, "1234i:t:b:")) != -1) {
-        switch(arg) {
-            case '1':         
-            {  
-               SELECT = 'W';
-	       if(SELECT != 'W')
-	       {
-                 printf("Error in the file \n");
-               }
-               printf("The selection made is sequential write \n");
-            }
-            break;
 
-            case '2':           
-            {  
-               SELECT = 'S';
-               if(SELECT != 'S')
-	       {
-                 printf("Error in the file \n");
-               }
-               printf("The selection made is sequential read \n");
-            }
-            break;
-
-            case '3':         
-            {  
-               SELECT = 'R';
-               if(SELECT != 'R')
-	       {
-                 printf("Error in the file \n");
-               }
-               printf("The selection made is random write \n");
-            }
-            break;
-
-            case '4':          
-            {  
-               SELECT = 'E';
-               if(SELECT != 'E')
-	       {
-                 printf("Error in the file \n");
-               }
-               printf("The selection made is random read \n");
-            }
-            break;
-        
-            case 'i':
-	    {
-              NUMBER_OF_ITERATIONS=atoi(optarg);
-	    }
-            break;
-
-	    case 't':
-	    {
-              NUMBER_OF_THREADS=atoi(optarg);
-            }
-            break;
-
-	    case 'b':           
-	    {
-            BLOCK_SIZE=atoi(optarg);
-            }
-            break;
-
-            default:
-            break;
-        }
-   }
+    number_of_arguments=argv;
     MyDiskBench();
     return 0;
 }

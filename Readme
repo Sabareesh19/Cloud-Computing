@@ -1,0 +1,109 @@
+ SABAREESH SURESH 
+CWID : A20396634
+READ ME INSTRUCTIONS
+
+CS553_PA1_Compile Instructions:
+
+All Benchmarks are tested using Prometheus testbed (216.47.142.37)
+The directory cs553-pa1 contains all the source code files in their respective directories naming cpu, memory, disk and network.
+
+CPU Benchmark:
+To run and compile the CPU benchmark, get into the CPU directory and then compile the file MyCPUBench.c which performs the CPU Benchmark.
+
+To compile and run this file use these following instructions:
+
+1.To run this program successfully first compile using the following command,
+gcc MyCPUBench.c -o MyCPUBench -lpthread
+2.Once the compilation is done, run the compiled file MyCPUBench in the following manner
+./MyCPUBench  <Type of precision>  <Number of threads>
+For example, to measure the CPU performance of Quarter precision for 1 thread using the following instruction to run the benchmark.
+./MyCPUBench QP 1
+
+Follow the same instruction to run 1,2,4 threads for precisions HP, SP and DP accordingly.
+QP , HP , SP ,DP denotes Quarter precision, Half precision, Single precision and Double precision respectively.
+
+Memory Benchmark:
+Go to cs553-pa1  memory directory to evaluate the memory benchmark. The source code naming MyRAMBench.c has the memory benchmark that is to be evaluated.
+
+To compile and run this file use these following instructions:
+1.To compile use the command gcc MyRAMBench.c -o MyRAMBench -lpthread
+2.Once the compilation is done, run the compiled file MyRAMBench in the following manner,
+./MyRAMBench <workload>   <Number of threads>  <block size>
+
+For example, to measure the memory benchmark for RWS, one thread of block size 1KB then follow this command
+./MyRAMBench  RWS  1  1000
+Follow the same instruction to run for 1B,1KB,1MB,10MB for the respective threads 1,2 and 4 accordingly for RWS (Read Write Sequential) and for RWR (Read Write Random) , replace RWR instead of RWS in the workload and run as  ./MyRAMBench  RWR  1  1000
+
+Disk Benchmark:
+Go to cs553-pa1  disk directory to evaluate the disk benchmark. The source code naming MyDiskBench.c has the Disk benchmark that is to be evaluated.
+
+To compile and run this file use these following instructions:
+1.To compile use the command gcc MyDiskBench.c -o MyDiskBench -lpthread
+2.Once the compilation is done, run the compiled file MyRAMBench in the following manner,
+./MyDiskBench <workload>   <Number of threads>  <block size>
+
+For example, to measure the memory benchmark for WS, one thread of block size 1KB then follow this command
+./MyDiskBench  WS  1  1000
+Follow the same instruction to run for 1KB,1MB,10MB,100MB for the respective threads 1,2,4,8,16,32,64,128 accordingly for WS (Write Sequential) and for WR (Write Random) , RS (Read Sequential) and for RR (Read Random)  replace WR instead of WS in the workload and run as  ./MyDiskBench  WR  1  1000
+
+Network Benchmark:
+Go to cs553-pa1  network directory to evaluate the memory benchmark. The network consists of client and server for Connection types TCP and UDP enabling the effective mode of transfer of data bytes.
+Firstly, run and compile the Server then execute the client (compile and run) accordingly. The same set of instructions is followed for both UDP and TCP protocols.
+
+Open two terminals in the cluster and find its local IP address and based on the IP you are using modify the connection accordingly.
+In order to run and execute the TCP Connection, follow the commands in order.
+Go to the source code MyNETBench-TCP_Server.c and execute the following the command
+1.To compile use the command gcc MyNETBench-TCP_Server.c -o TCP_Server -lpthread
+2.Once the compilation is done, run the compiled file TCP_Server in the following manner,
+./ TCP_Server  <Connection Type>   <block size>   <Number of threads>
+For example, to measure the Network benchmark for TCP Server, one thread of block size 1KB then follow this command
+./ TCP_Client   TCP  1024  1     (1KB)
+./ TCP_Client   TCP  32768  1   (32KB)
+./ TCP_Client   TCP  1  1           (1B)
+
+After executing this instruction, the server will now start to listen the message from the client and now start the client using this following instruction
+
+Go to the source code MyNETBench-TCP_Client.c and execute the following the command
+1.To compile use the command gcc MyNETBench-TCP_Client.c  -o  TCP_Client  -lpthread
+2.Once the compilation is done, run the compiled file TCP_Server in the following manner,
+./ TCP_Client  <Connection Type>   <block size>   <Number of threads>
+
+For example, to measure the Network benchmark for TCP Client, one thread of block size 1KB then follow this command
+./ TCP_Client   TCP  1024  1     (1KB)
+./ TCP_Client   TCP  32768  1   (32KB)
+./ TCP_Client   TCP  1  1           (1B)
+
+Follow the same instruction to run for 1B,1KB,32KB for threads 1,2,4,8 accordingly for UDP Connection protocol, replace UDP instead of TCP .
+
+In order to run and execute the UDP Connection, follow the commands in order.
+Go to the source code MyNETBench-UDP_Server.c and execute the following the command
+1.To compile use the command gcc MyNETBench-UDP_Server.c -o UDP_Server -lpthread
+2.Once the compilation is done, run the compiled file UDP_Server in the following manner,
+./ UDP_Server  <Connection Type>   <block size>   <Number of threads>
+For example, to measure the Network benchmark for UDP Server, one thread of block size 1KB then follow this command
+./ UDP_Server   UDP  1024  1
+
+After executing this instruction, the server will now start to listen the message from the client and now start the client using this following instruction
+
+Go to the source code MyNETBench-UDP_Client.c and execute the following the command
+1.To compile use the command gcc MyNETBench-UDP_Client.c  -o  UDP_Client  -lpthread
+2.Once the compilation is done, run the compiled file UDP_Server in the following manner,
+./ UDP_Client  <Connection Type>   <block size>   <Number of threads>
+
+For example, to measure the Network benchmark for UDP Client, one thread of block size 1KB then follow this command
+./ UDP_Client   UDP  1024 1
+
+
+Bash Scripts:
+The Bash scripts reduce the complexity and its ease to use. Bash scripts are provided to invoke CPU, Memory and Disk Benchmark performances. The scripts run all stated scenarios for the experiments: Read /Write, Sequential/ Random with varying block sizes and threads, FLOPS for CPU.
+
+Bash_CPU.sh run this bash file to evaluate the CPU performance. Input is given with varying number of threads and the precision. The respective output will be generated under the directory naming output that contains .thread.dat files where the output is of space separated column of values as mentioned.For a faster execution run in compute node (interactive mode)
+
+Bash_memory.sh run this bash file to evaluate the Memory performance. Input is given with varying block sizes, number of threads for workloads sequential read write and random read write. The respective output will be generated under the directory naming output that contains  .thread.dat files where the output is of space separated column of values as mentioned . For a faster execution run in compute node (interactive mode)
+
+
+Bash_disk.sh run this bash file to evaluate the Disk performance. Input is given with varying block sizes, number of threads for workloads sequential read, sequential write, random read and random write. The respective output will be generated under the directory naming output that contains  .thread.dat files where the output is of space separated column of values as mentioned . For a faster execution run in compute node (interactive mode)
+
+Network : Open two terminals in the compute node and then execute the instructions accordingly. The output will be displayed in the console directly for the ease of use. 
+
+

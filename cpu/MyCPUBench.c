@@ -19,10 +19,10 @@ void* Quarter_precision(void* arg)
 {
    if(strcmp(number_of_arguments[1],"Q") == 0) 
    {
+   char a1,a2,a3;   
    for(int i = 0;i <= TRILLION_DATA;i++)
      {
-       char a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11;
-       a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9+a10)*a1;
+       a11 = a1+a2+a3;
        a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9+a10)*a1;
        a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9+a10)*a1;
        a11 = (a1+a2+a3-a4+a5+a6+a7+a8+a9+a10)*a1;
